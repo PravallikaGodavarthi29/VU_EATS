@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Cart - Booking</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f8f8f8;
+      margin: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      background: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background-color: orange;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>My Cart</h1>
+  <div class="container">
+    <table>
+      <thead>
+        <tr>
+          <th>S.No.</th>
+          <th>Product</th>
+          <th>Price (₹)</th>
+          <th>Quantity</th>
+          <th>Canteen</th>
+          <th>Total (₹)</th>
+        </tr>
+      </thead>
+      <tbody id="cart-summary"></tbody>
+    </table>
+
+    <p><strong>Subtotal:</strong> ₹<span id="subtotal">0.00</span></p>
+    <p><strong>GST Charges (3%):</strong> ₹<span id="gst">0.00</span></p>
+    <p><strong>Total:</strong> ₹<span id="total">0.00</span></p>
+
+    <h2>Enter Details</h2>
+    <input type="text" id="name" placeholder="Enter Name" required />
+    <input type="text" id="phone" placeholder="Enter Phone Number" required />
+    <input type="text" id="reg-number" placeholder="Enter Registration Number" required />
+    <input type="time" id="food-time" required />
+    <select id="order-type">
+      <option value="Dine In">Dine In</option>
+      <option value="Takeaway">Takeaway</option>
+      <option value="Delivery">Delivery</option>
+    </select>
+    <button onclick="confirmOrder()">Buy Now</button>
+  </div>
+
+  <script>
+    const cart = JSON.parse(localStorage.getItem("cart")) || {};
+    const cartSummary = document.getElementById("cart-summary");
+    const subtotalElem = document.getElementById("subtotal");
+    const gstElem = document.getElementById("gst");
+    const totalElem = document.getElementById("total");
+
+    let subtotal = 0;
+    let index = 1;
+
+    for (let item in cart) {
+      const { price, quantity, canteen = "MHP" } = cart[item];
+      const total = price * quantity;
+      subtotal += total;
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${index++}</td>
+        <td>${item}</td>
+        <td>₹${price}</td>
+        <td>${quantity}</td>
+        <td>${canteen}</td>
+        <td>₹${total}</td>
+      `;
+      cartSummary.appendChild(row);
+    }
+
+    const gst = +(subtotal * 0.03).toFixed(2);
+    const grandTotal = +(subtotal + gst).toFixed(2);
+
+    subtotalElem.textContent = subtotal.toFixed(2);
+    gstElem.textContent = gst.toFixed(2);
+    totalElem.textContent = grandTotal.toFixed(2);
+
+    function confirmOrder() {
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const orderType = document.getElementById("order-type").value;
+      const regNumber = document.getElementById("reg-number").value.trim();
+      const timeSlot = document.getElementById("food-time").value;
+
+      if (!name || !phone || !regNumber || !timeSlot) {
+        alert("Please fill in all details before proceeding.");
+        return;
+      }
+
+      const orderId = "VU" + Math.floor(100000 + Math.random() * 900000); // Auto generated order id
+
+      const orderDetails = {
+        orderId,
+        name,
+        phone,
+        orderType,
+        regNumber,
+        timeSlot,
+        subtotal: subtotal.toFixed(2),
+        gst: gst.toFixed(2),
+        total: grandTotal.toFixed(2),
+        items: cart
+      };
+
+      localStorage.setItem("orderDetails", JSON.stringify(orderDetails));
+      localStorage.removeItem("cart");
+
+      window.location.href = `payment.html`;
+    }
+  </script>
+</body>
+</html>

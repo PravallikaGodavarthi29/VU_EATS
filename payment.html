@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment</title>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f8f8f8;
+      margin: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      background: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    .container:hover {
+      box-shadow: 0 0 15px rgba(0, 123, 255, 0.6);
+      transform: scale(1.01);
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 8px;
+    }
+    .upi {
+      background-color: #4285f4;
+      color: white;
+    }
+    .upi:hover {
+      background-color: #3367d6;
+    }
+    .cod {
+      background-color: green;
+      color: white;
+    }
+    .cod:hover {
+      background-color: #267d39;
+    }
+    ul {
+      text-align: left;
+      padding-left: 20px;
+    }
+    .gif {
+      margin-top: 20px;
+      max-width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>Confirm Payment</h1>
+  <div class="container">
+    <p><strong>Order ID:</strong> <span id="order-id"></span></p>
+    <p><strong>Name:</strong> <span id="customer-name"></span></p>
+    <p><strong>Phone:</strong> <span id="customer-phone"></span></p>
+    <p><strong>Reg No:</strong> <span id="reg-number"></span></p>
+    <p><strong>Time Slot:</strong> <span id="time-slot"></span></p>
+    <p><strong>Total Amount:</strong> ₹<span id="total-amount"></span></p>
+    
+    <h3>Items:</h3>
+    <ul id="item-list"></ul>
+
+    <button class="upi" onclick="payWithRazorpay()">Pay via UPI / Card</button>
+    <button class="cod" onclick="cashOnDelivery()">Cash on Delivery</button>
+
+    <!-- Faster GIF -->
+    <img src="C:\xampp\htdocs\vueats1\images\payment gif.gif" alt="Delivery Animation" class="gif">
+  </div>
+
+  <script>
+    const orderDetails = JSON.parse(localStorage.getItem("orderDetails"));
+    if (!orderDetails) {
+      alert("No order found!");
+      window.location.href = "booking.html";
+    }
+
+    document.getElementById("order-id").textContent = orderDetails.orderId;
+    document.getElementById("customer-name").textContent = orderDetails.name;
+    document.getElementById("customer-phone").textContent = orderDetails.phone;
+    document.getElementById("reg-number").textContent = orderDetails.regNumber;
+    document.getElementById("time-slot").textContent = orderDetails.timeSlot;
+    document.getElementById("total-amount").textContent = orderDetails.total;
+
+    const itemList = document.getElementById("item-list");
+    for (let item in orderDetails.items) {
+      const { quantity } = orderDetails.items[item];
+      const li = document.createElement("li");
+      li.textContent = `${item} x ${quantity}`;
+      itemList.appendChild(li);
+    }
+
+    function payWithRazorpay() {
+      let options = {
+        key: "rzp_test_1234567890abcdef", // Replace with your Razorpay key
+        amount: parseFloat(orderDetails.total) * 100,
+        currency: "INR",
+        name: "VU Canteen",
+        description: "Order Payment",
+        handler: function (response) {
+          storeOrder("Online Payment", response.razorpay_payment_id);
+        },
+        prefill: {
+          name: orderDetails.name,
+          email: "test@example.com",
+          contact: orderDetails.phone
+        },
+        theme: {
+          color: "#3399cc"
+        }
+      };
+      let rzp = new Razorpay(options);
+      rzp.open();
+    }
+
+    function cashOnDelivery() {
+      storeOrder("Cash on Delivery", "N/A");
+    }
+
+    function storeOrder(method, paymentId) {
+      orderDetails.paymentMethod = method;
+      orderDetails.paymentId = paymentId;
+
+      localStorage.setItem("lastOrder", JSON.stringify(orderDetails));
+      alert("Order Confirmed!");
+      window.location.href = `order_success.html?orderId=${orderDetails.orderId}`;
+    }
+  </script>
+</body>
+</html>

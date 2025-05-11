@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VU Eats - Login</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e0f0ff, #ffffff);
+      padding: 20px;
+    }
+
+    .wrapper {
+      display: flex;
+      width: 100%;
+      max-width: 1000px;
+      background: #fff;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .left {
+      flex: 1;
+      background: linear-gradient(135deg, #f0f8ff, #dbefff);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+    }
+
+    .left h2 {
+      font-size: 1.8rem;
+      color: #0077cc;
+      margin-bottom: 20px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .left img {
+      width: 100%;
+      max-width: 350px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 119, 204, 0.1);
+    }
+
+    .right {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: white;
+    }
+
+    .right h2 {
+      font-size: 2rem;
+      margin-bottom: 25px;
+      color: #003366;
+      text-align: center;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      outline: none;
+      font-size: 1rem;
+    }
+
+    input:focus {
+      border-color: #0077cc;
+      box-shadow: 0 0 8px rgba(0, 119, 204, 0.3);
+    }
+
+    button {
+      padding: 12px;
+      border: none;
+      background-color: #0077cc;
+      color: #fff;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+
+    p {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    a {
+      color: #0077cc;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .wrapper {
+        flex-direction: column;
+      }
+      .left, .right {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrapper">
+    <div class="left">
+      <h2>
+        I'm enjoying my food 😋<br/>
+        Do you want to enjoy food too?<br/>
+        <strong>Then login fast!</strong>
+      </h2>
+      <img src="C:\xampp\htdocs\vueats1\images\login gif.gif" alt="Hungry Anime Girl" />
+    </div>
+
+    <div class="right">
+      <h2>Login to VU Eats</h2>
+      <form id="loginForm">
+        <input type="text" id="regNumber" placeholder="Registration Number" required />
+        <input type="email" id="loginEmail" placeholder="Email" required />
+        <input type="password" id="loginPassword" placeholder="Password" required />
+        <button type="submit">Login</button>
+      </form>
+      <p>Don't have an account? <a href="register.html">Register here</a></p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      let regNumber = document.getElementById("regNumber").value.trim();
+      let email = document.getElementById("loginEmail").value.trim();
+      let password = document.getElementById("loginPassword").value;
+
+      let storedRegNumber = localStorage.getItem("userRegNumber");
+      let storedEmail = localStorage.getItem("userEmail");
+      let storedPassword = localStorage.getItem("userPassword");
+
+      if (email === storedEmail && password === storedPassword && regNumber === storedRegNumber) {
+        alert("Login successful!");
+        localStorage.setItem("isLoggedIn", "true");
+        window.location.href = "index.html"; // redirect to dashboard/canteen/home page
+      } else {
+        alert("Invalid credentials. Please try again.");
+      }
+    });
+  </script>
+
+</body>
+</html>

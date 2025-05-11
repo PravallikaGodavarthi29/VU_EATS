@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Cart - Booking</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f8f8f8;
+      margin: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      background: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background-color: orange;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>My Cart</h1>
+  <div class="container">
+    <table>
+      <thead>
+        <tr>
+          <th>S.No.</th>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Canteen</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="cart-summary"></tbody>
+    </table>
+
+    <p><strong>Subtotal:</strong> ₹<span id="subtotal">0.00</span></p>
+    <p><strong>GST Charges (3%):</strong> ₹<span id="gst">0.00</span></p>
+    <p><strong>Total:</strong> ₹<span id="total">0.00</span></p>
+
+    <h2>Enter Details</h2>
+    <input type="text" id="name" placeholder="Enter Name" required />
+    <input type="text" id="phone" placeholder="Enter Phone Number" required />
+    <select id="order-type">
+      <option value="Dine In">Dine In</option>
+      <option value="Takeaway">Takeaway</option>
+      <option value="Delivery">Delivery</option>
+    </select>
+    <button onclick="confirmOrder()">Buy Now</button>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+      const cartList = document.getElementById("cart-summary");
+      let subtotal = 0;
+
+      cartList.innerHTML = "";
+
+      cartItems.forEach((item, index) => {
+        const itemTotal = item.price * item.quantity;
+        subtotal += itemTotal;
+
+        const row = `<tr>
+            <td>${index + 1}</td>
+            <td>${item.name}</td>
+            <td>₹${item.price.toFixed(2)}</td>
+            <td>${item.quantity}</td>
+            <td>${item.canteen}</td>
+            <td>₹${itemTotal.toFixed(2)}</td>
+        </tr>`;
+        cartList.innerHTML += row;
+      });
+
+      const gst = subtotal * 0.03;
+      const total = subtotal + gst;
+
+      document.getElementById("subtotal").textContent = subtotal.toFixed(2);
+      document.getElementById("gst").textContent = gst.toFixed(2);
+      document.getElementById("total").textContent = total.toFixed(2);
+    });
+
+    function confirmOrder() {
+      const name = document.getElementById("name").value;
+      const phone = document.getElementById("phone").value;
+      const orderType = document.getElementById("order-type").value;
+      const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+      const totalAmount = document.getElementById("total").textContent;
+
+      if (!name || !phone) {
+        alert("Please enter all details before proceeding.");
+        return;
+      }
+
+      const orderDetails = {
+        orderId: "VU-" + Math.floor(100000 + Math.random() * 900000),
+        name,
+        phone,
+        orderType,
+        totalAmount,
+        cartItems,
+        timestamp: new Date().toISOString()
+      };
+
+      localStorage.setItem("orderData", JSON.stringify(orderDetails));
+      window.location.href = `payment.html?orderId=${orderDetails.orderId}&amount=${totalAmount}`;
+    }
+  </script>
+</body>
+</html>

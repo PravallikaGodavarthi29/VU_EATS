@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MHP Canteen</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 0;
+      }
+      h1,
+      h2 {
+        text-align: center;
+        color: #333;
+      }
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 20px;
+        max-width: 1200px;
+        margin: auto;
+      }
+      .menu,
+      .cart {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        flex: 1;
+        margin: 10px;
+        min-width: 300px;
+      }
+      .menu {
+        flex: 2;
+      }
+      .item {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+        font-size: 16px;
+      }
+      .item button,
+      .remove-btn,
+      .checkout-btn {
+        background: #ff5722;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 14px;
+        transition: 0.3s;
+      }
+      .remove-btn {
+        background: red;
+      }
+      .remove-btn:hover {
+        background: darkred;
+      }
+      .checkout-btn {
+        width: 100%;
+        background: green;
+        padding: 12px;
+        font-size: 16px;
+        margin-top: 10px;
+      }
+      .checkout-btn:hover {
+        background: darkgreen;
+      }
+      .category-tabs {
+        text-align: center;
+        margin: 20px 0;
+      }
+      .category-btn {
+        padding: 10px 15px;
+        margin: 5px;
+        border: none;
+        background: #007bff;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+      .category-btn.active,
+      .category-btn:hover {
+        background: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>MHP Canteen Menu</h1>
+    <div class="category-tabs">
+      <button class="category-btn active" onclick="filterMenu('all', this)">
+        All
+      </button>
+      <button class="category-btn" onclick="filterMenu('breakfast', this)">
+        Breakfast
+      </button>
+      <button class="category-btn" onclick="filterMenu('lunch', this)">
+        Lunch
+      </button>
+      <button class="category-btn" onclick="filterMenu('dinner', this)">
+        Dinner
+      </button>
+      <button class="category-btn" onclick="filterMenu('beverages', this)">
+        Beverages
+      </button>
+      <button class="category-btn" onclick="filterMenu('desserts', this)">
+        Desserts
+      </button>
+    </div>
+    <div class="container">
+      <div class="menu" id="menu-items"></div>
+      <div class="cart">
+        <h2>Cart</h2>
+        <ul class="cart-items"></ul>
+        <h3>Total: ₹<span id="total-price">0</span></h3>
+        <button class="checkout-btn" onclick="proceedToCheckout()">
+          Checkout
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const menuItems = [
+        { name: "Idli", price: 20, category: "breakfast" },
+        { name: "Dosa", price: 30, category: "breakfast" },
+        { name: "Poori", price: 35, category: "breakfast" },
+        { name: "Veg Rice", price: 50, category: "lunch" },
+        { name: "Chicken Curry", price: 70, category: "lunch" },
+        { name: "Chapati & Curry", price: 40, category: "dinner" },
+        { name: "Fried Rice", price: 60, category: "dinner" },
+        { name: "Tea", price: 10, category: "beverages" },
+        { name: "Coffee", price: 15, category: "beverages" },
+        { name: "Lassi", price: 25, category: "beverages" },
+        { name: "Ice Cream", price: 30, category: "desserts" },
+        { name: "Gulab Jamun", price: 20, category: "desserts" },
+      ];
+
+      let cart = {};
+
+      function renderMenu(items) {
+        const container = document.getElementById("menu-items");
+        container.innerHTML = "";
+        items.forEach(item => {
+          const div = document.createElement("div");
+          div.className = "item";
+          div.innerHTML = `
+            <span>${item.name} - ₹${item.price}</span>
+            <button onclick="addToCart('${item.name}', ${item.price})">Add</button>
+          `;
+          container.appendChild(div);
+        });
+      }
+
+      function filterMenu(category, btn) {
+        document.querySelectorAll(".category-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        if (category === "all") renderMenu(menuItems);
+        else renderMenu(menuItems.filter(item => item.category === category));
+      }
+
+      function addToCart(name, price) {
+        if (!cart[name]) {
+          cart[name] = { price, quantity: 1 };
+        } else {
+          cart[name].quantity++;
+        }
+        updateCartDisplay();
+      }
+
+      function removeFromCart(name) {
+        if (cart[name]) {
+          cart[name].quantity--;
+          if (cart[name].quantity <= 0) delete cart[name];
+          updateCartDisplay();
+        }
+      }
+
+      function updateCartDisplay() {
+        const cartList = document.querySelector(".cart-items");
+        const totalPrice = document.getElementById("total-price");
+        cartList.innerHTML = "";
+        let total = 0;
+
+        for (let item in cart) {
+          const { price, quantity } = cart[item];
+          total += price * quantity;
+
+          const li = document.createElement("li");
+          li.innerHTML = `
+            ${item} - ₹${price} x ${quantity}
+            <button class="remove-btn" onclick="removeFromCart('${item}')">Remove</button>
+          `;
+          cartList.appendChild(li);
+        }
+
+        totalPrice.textContent = total.toFixed(2);
+      }
+
+      function proceedToCheckout() {
+        localStorage.setItem("cart", JSON.stringify(cart));
+        window.location.href = "booking.html";
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        renderMenu(menuItems);
+      });
+    </script>
+  </body>
+</html>

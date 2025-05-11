@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Signup - Anime Food Theme</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #e3f2fd;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      display: flex;
+      max-width: 900px;
+      width: 100%;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+    }
+
+    .carousel-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      max-height: 100%;
+    }
+
+    .carousel-images {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+      height: 100%;
+    }
+
+    .carousel-images img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .form-container {
+      flex: 1;
+      padding: 2rem;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    h2 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      padding: 12px;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #1565c0;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #0d47a1;
+    }
+
+    p {
+      text-align: center;
+      margin-top: 1rem;
+      color: #333;
+    }
+
+    a {
+      color: #1565c0;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a:hover {
+      color: #0d47a1;
+    }
+
+    @media screen and (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .carousel-container {
+        height: 200px;
+      }
+
+      .form-container {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="carousel-container">
+      <div class="carousel-images" id="carousel">
+        <img src="images/sandwich.jpeg" alt="Food Anime 1">
+        <img src="images/piza.jpeg" alt="Food Anime 2">
+        <img src="images/noodles.webp" alt="Food Anime 3">
+        <img src="images/idly.jpg" alt="Food Anime 4">
+        <img src="images/foodd.jpeg" alt="Food Anime 5">
+        <img src="images/dosa.jpeg" alt="Food Anime 6">
+      </div>
+    </div>
+    <div class="form-container">
+      <h2>Sign up!</h2>
+      <form id="registerForm">
+        <input type="text" id="registerName" placeholder="Name" required />
+        <input type="text" id="registerNumber" placeholder="Registration Number" required />
+        <input type="text" id="department" placeholder="Department" required />
+        <input type="email" id="registerEmail" placeholder="Email" required />
+        <input type="password" id="registerPassword" placeholder="Password" required />
+        <button type="submit">Signup</button>
+      </form>
+      <p>Already have an account? <a href="login.html">Login here</a></p>
+    </div>
+  </div>
+
+  <script>
+    // Auto-scroll carousel
+    const carousel = document.getElementById("carousel");
+    let index = 0;
+    const totalImages = carousel.children.length;
+
+    setInterval(() => {
+      index = (index + 1) % totalImages;
+      carousel.style.transform = `translateX(-${index * 100}%)`;
+    }, 3000);
+
+    // Form handler
+    document.getElementById("registerForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      
+      const name = document.getElementById("registerName").value.trim();
+      const regNo = document.getElementById("registerNumber").value.trim();
+      const dept = document.getElementById("department").value.trim();
+      const email = document.getElementById("registerEmail").value.trim();
+      const password = document.getElementById("registerPassword").value;
+
+      // Save to localStorage
+      localStorage.setItem("userName", name);
+      localStorage.setItem("userRegNumber", regNo);
+      localStorage.setItem("userDepartment", dept);
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("userPassword", password);
+
+      alert("Registration successful! Please login now.");
+      window.location.href = "login.html";
+    });
+  </script>
+</body>
+</html>
